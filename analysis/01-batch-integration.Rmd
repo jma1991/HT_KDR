@@ -63,8 +63,8 @@ Extract variance statistics:
 
 ```{r}
 dec <- list(
-  HT_KDR_HET_A = metadata(sce$HT_KDR_HET_A)$modelGeneVarByPoisson,
-  HT_KDR_HOM_B = metadata(sce$HT_KDR_HOM_B)$modelGeneVarByPoisson
+  HT_KDR_HET_A = metadata(sce$HT_KDR_HET_A)$modelGeneVar,
+  HT_KDR_HOM_B = metadata(sce$HT_KDR_HOM_B)$modelGeneVar
 )
 ```
 
