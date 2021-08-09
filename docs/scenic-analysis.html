@@ -12,7 +12,7 @@
 <meta name="author" content="James Ashmore" />
 
 
-<title>Interactive data exploration</title>
+<title>SCENIC analysis</title>
 
 <script src="site_libs/header-attrs-2.9/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -397,7 +397,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Interactive data exploration</h1>
+<h1 class="title toc-ignore">SCENIC analysis</h1>
 <h4 class="author">James Ashmore</h4>
 <h4 class="date">09 August, 2021</h4>
 
@@ -558,7 +558,7 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <div id="versions" class="tab-pane fade">
 
 <p>
-These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/interactive.Rmd</code>) and HTML (<code>docs/interactive.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/scenic-analysis.Rmd</code>) and HTML (<code>docs/scenic-analysis.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
 </p>
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
@@ -587,98 +587,13 @@ Message
 Rmd
 </td>
 <td>
-<a href="https://github.com/jma1991/HT_KDR/blob/d804d1f1fb89b5b384de34d91d38d630464046ad/analysis/interactive.Rmd" target="_blank">d804d1f</a>
+<a href="https://github.com/jma1991/HT_KDR/blob/d804d1f1fb89b5b384de34d91d38d630464046ad/analysis/scenic-analysis.Rmd" target="_blank">d804d1f</a>
 </td>
 <td>
 James Ashmore
 </td>
 <td>
 2021-08-09
-</td>
-<td>
-Build
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jma1991/HT_KDR/fc3af646b131e2389277da5f5d2dbb4cb8bd00bc/docs/interactive.html" target="_blank">fc3af64</a>
-</td>
-<td>
-James Ashmore
-</td>
-<td>
-2021-07-30
-</td>
-<td>
-Build
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/jma1991/HT_KDR/blob/f55543ca0a09f3ed29074a5632bad95ce88f2966/analysis/interactive.Rmd" target="_blank">f55543c</a>
-</td>
-<td>
-James Ashmore
-</td>
-<td>
-2021-07-30
-</td>
-<td>
-Build
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jma1991/HT_KDR/f31ab482a212223d6504a27e8635a947112eefab/docs/interactive.html" target="_blank">f31ab48</a>
-</td>
-<td>
-James Ashmore
-</td>
-<td>
-2021-07-29
-</td>
-<td>
-Build
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jma1991/HT_KDR/927e367a5e1419c0169a80ed629d3bfcb85e6ad3/docs/interactive.html" target="_blank">927e367</a>
-</td>
-<td>
-James Ashmore
-</td>
-<td>
-2021-07-21
-</td>
-<td>
-Build
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/jma1991/HT_KDR/blob/ff6e560a093dff175d5d501e0f87f7f34f459c01/analysis/interactive.Rmd" target="_blank">ff6e560</a>
-</td>
-<td>
-James Ashmore
-</td>
-<td>
-2021-07-21
 </td>
 <td>
 Build
@@ -691,118 +606,105 @@ Build
 </div>
 </div>
 </div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>In this document we are going to analyse the output from the pySCENIC command-line software. SCENIC is a tool for single-cell regulatory network inference and clustering.</p>
+</div>
 <div id="setup" class="section level2">
 <h2>Setup</h2>
-<p>Set chunk options:</p>
-<pre class="r"><code>knitr::opts_chunk$set(eval = FALSE)</code></pre>
+<p>Define chunk options:</p>
+<pre class="r"><code>knitr::opts_chunk$set(
+  autodep    = TRUE,
+  cache      = TRUE,
+  cache.path = &quot;cache/scenic-analysis.Rmd/&quot;,
+  dev        = &quot;png&quot;,
+  error      = FALSE,
+  message    = FALSE,
+  warning    = FALSE,
+  fig.align = &quot;center&quot;,
+  out.width = &#39;100%&#39;
+)</code></pre>
+<p>Load Bioconductor packages:</p>
+<pre class="r"><code>library(scuttle)</code></pre>
 <p>Load CRAN packages:</p>
-<pre class="r"><code>library(rsconnect)</code></pre>
-<p>Include Bioconductor package repositories:</p>
-<pre class="r"><code>options(repos = BiocManager::repositories())</code></pre>
-<p>Automatically answer yes to any user prompt:</p>
-<pre class="r"><code>options(needs.promptUser = FALSE)</code></pre>
-<p>Delete existing shiny directory:</p>
-<pre class="r"><code>unlink(&quot;shiny&quot;, recursive = TRUE)</code></pre>
-<p>Create shiny directory for interactive data exploration:</p>
-<pre class="r"><code>dir.create(&quot;shiny&quot;, showWarnings = FALSE, mode = &quot;0755&quot;)</code></pre>
+<pre class="r"><code>library(hues)
+library(pheatmap)
+library(viridis)</code></pre>
+<p>Define function to import AUCell matrix from text format:</p>
+<pre class="r"><code>importAUCfromText &lt;- function(fileName, rows=&quot;regulons&quot;, columns=&quot;cells&quot;, transpose=TRUE, newNames=NULL) {
+  aucMatrix &lt;- data.table::fread(fileName, drop=1)
+  cellNames &lt;- unname(unlist(data.table::fread(fileName, select=1, skip=1)))
+  if(transpose) aucMatrix &lt;- t(as.matrix(aucMatrix))
+  colnames(aucMatrix) &lt;- cellNames
+  if(!is.null(newNames)) rownames(aucMatrix) &lt;- unname(newNames[rownames(aucMatrix)])
+  names(dimnames(aucMatrix)) &lt;- c(rows, columns)
+  return(aucMatrix)
+}</code></pre>
 </div>
-<div id="applications" class="section level2 tabset">
-<h2 class="tabset">Applications</h2>
-<div id="sample-data" class="section level3">
-<h3>Sample data</h3>
-<p>Create iSEE directory for sample integrated data:</p>
-<pre class="r"><code>dir.create(&quot;shiny/sample&quot;, showWarnings = FALSE, mode = &quot;0755&quot;)</code></pre>
-<p>Copy sample data to iSEE directory:</p>
-<pre class="r"><code>file.copy(&quot;output/04-marker-detection.rds&quot;, &quot;shiny/sample/data.rds&quot;, overwrite = TRUE)</code></pre>
-<p>Write code to iSEE application file:</p>
-<pre class="r r"><code># Load required packages
-library(iSEE)
-library(SingleCellExperiment)
-library(BiocSingular)
+<div id="results" class="section level2">
+<h2>Results</h2>
+<p>Read experiment object:</p>
+<pre class="r"><code>sce &lt;- readRDS(&quot;output/04-marker-detection.rds&quot;)</code></pre>
+<p>Make cell names unique:</p>
+<pre class="r"><code>N &lt;- ncol(sce)
 
-# Load experiment object
-sce &lt;- readRDS(&quot;data.rds&quot;)
+colnames(sce) &lt;- seq_len(N)</code></pre>
+<p>Import activity matrix:</p>
+<pre class="r"><code>auc &lt;- importAUCfromText(&quot;output/pyscenic/aucell.csv&quot;)</code></pre>
+<p>Rename experiment cells:</p>
+<pre class="r"><code>colnames(auc) &lt;- colnames(sce)</code></pre>
+<p>Order activity matrix by cluster:</p>
+<pre class="r"><code>auc &lt;- auc[, order(sce$cluster_integrated)]</code></pre>
+<p>Create heatmap colour palette:</p>
+<pre class="r"><code>phenotype.palette &lt;- c(&quot;HET&quot; = &quot;#BAB0AC&quot;, &quot;HOM&quot; = &quot;#E15759&quot;)
 
-# Make feature names unique
-rownames(sce) &lt;- scuttle::uniquifyFeatureNames(rowData(sce)$gene_id, rowData(sce)$gene_name)
+cluster.palette &lt;- iwanthue(n = nlevels(sce$cluster_integrated))
 
-# Define column data variables
-sce$EGFP &lt;- counts(sce)[&quot;EGFP&quot;, ] &gt; 0
-sce$Etv2 &lt;- counts(sce)[&quot;Etv2&quot;, ] &gt; 0
-sce$Kdr &lt;- counts(sce)[&quot;Kdr&quot;, ] &gt; 0
-sce$EGFP_AND_Etv2 &lt;- sce$EGFP &amp; sce$Kdr
-sce$Etv2_AND_Kdr &lt;- sce$Etv2 &amp; sce$Kdr
+cluster.palette &lt;- setNames(cluster.palette, levels(sce$cluster_integrated))
 
-# Define column data colours
-celltype_colours &lt;- function(n) {
-  c(
-    &quot;Allantois&quot; = &quot;#532C8A&quot;,
-    &quot;Anterior Primitive Streak&quot; = &quot;#C19F70&quot;,
-    &quot;Blood progenitors 1&quot; = &quot;#D9DECF&quot;,
-    &quot;Blood progenitors 2&quot; = &quot;#C9A997&quot;,
-    &quot;Cardiomyocytes&quot; = &quot;#B51D8D&quot;,
-    &quot;Caudal epiblast&quot; = &quot;#9E6762&quot;,
-    &quot;Caudal Mesoderm&quot; = &quot;#3F84AA&quot;,
-    &quot;Caudal neurectoderm&quot; = &quot;#354E23&quot;,
-    &quot;Def. endoderm&quot; = &quot;#F397C0&quot;,
-    &quot;Endothelium&quot; = &quot;#FF891C&quot;,
-    &quot;Epiblast&quot; = &quot;#635547&quot;,
-    &quot;Erythroid1&quot; = &quot;#C72228&quot;,
-    &quot;Erythroid2&quot; = &quot;#F79083&quot;,
-    &quot;Erythroid3&quot; = &quot;#EF4E22&quot;,
-    &quot;ExE ectoderm&quot; = &quot;#989898&quot;,
-    &quot;ExE endoderm&quot; = &quot;#7F6874&quot;,
-    &quot;ExE mesoderm&quot; = &quot;#8870AD&quot;,
-    &quot;Forebrain/Midbrain/Hindbrain&quot; = &quot;#647A4F&quot;,
-    &quot;Gut&quot; = &quot;#EF5A9D&quot;,
-    &quot;Haematoendothelial progenitors&quot; = &quot;#FBBE92&quot;,
-    &quot;Intermediate mesoderm&quot; = &quot;#139992&quot;,
-    &quot;Mesenchyme&quot; = &quot;#CC7818&quot;,
-    &quot;Mixed mesoderm&quot; = &quot;#DFCDE4&quot;,
-    &quot;Nascent mesoderm&quot; = &quot;#C594BF&quot;,
-    &quot;Neural crest&quot; = &quot;#C3C388&quot;,
-    &quot;NMP&quot; = &quot;#8EC792&quot;,
-    &quot;Notochord&quot; = &quot;#0F4A9C&quot;,
-    &quot;Paraxial mesoderm&quot; = &quot;#8DB5CE&quot;,
-    &quot;Parietal endoderm&quot; = &quot;#1A1A1A&quot;,
-    &quot;PGC&quot; = &quot;#FACB12&quot;,
-    &quot;Pharyngeal mesoderm&quot; = &quot;#C9EBFB&quot;,
-    &quot;Primitive Streak&quot; = &quot;#DABE99&quot;,
-    &quot;Rostral neurectoderm&quot; = &quot;#65A83E&quot;,
-    &quot;Somitic mesoderm&quot; = &quot;#005579&quot;,
-    &quot;Spinal cord&quot; = &quot;#CDE088&quot;,
-    &quot;Surface ectoderm&quot; = &quot;#F7F79E&quot;,
-    &quot;Visceral endoderm&quot; = &quot;#F6BFCB&quot;
+celltype.palette &lt;- MouseGastrulationData::EmbryoCelltypeColours
+
+celltype.palette &lt;- subset(celltype.palette, names(celltype.palette) %in% sce$celltype)</code></pre>
+<p>Create heatmap annotation:</p>
+<pre class="r"><code>ann &lt;- list(
+  annotation_col = data.frame(
+    Cluster = sce$cluster_integrated, 
+    Celltype = sce$celltype, 
+    Phenotype = sce$phenotype, 
+    row.names = colnames(sce)
+  ),
+  annotation_colors = list(
+    Cluster = cluster.palette, 
+    Celltype = celltype.palette, 
+    Phenotype = phenotype.palette
   )
-}
-
-boolean_colours &lt;- function(n) {
-  c(&quot;TRUE&quot; = &quot;#E15759&quot;, &quot;FALSE&quot; = &quot;#BAB0AC&quot;)
-}
-
-# Set iSEE options
-iSEEOptions$set(downsample = TRUE)
-iSEEOptions$set(color.maxlevels = 37)
-
-# Define iSEE colours
-ecm &lt;- ExperimentColorMap(
-  colData = list(
-    celltype = celltype_colours,
-    EGFP = boolean_colours,
-    Etv2 = boolean_colours,
-    Kdr = boolean_colours,
-    EGFP_AND_Etv2 = boolean_colours,
-    Etv2_AND_Kdr = boolean_colours
-  )
-)
-
-# Create iSEE object
-iSEE(sce, appTitle = &quot;HT_KDR&quot;, colormap = ecm)</code></pre>
-<p>Deploy the iSEE application to the shiny server:</p>
-<pre class="r"><code>deployApp(appDir = &quot;shiny/sample&quot;, appName = &quot;HT_KDR&quot;, appTitle = &quot;HT_KDR&quot;, launch.browser = FALSE, forceUpdate = TRUE)</code></pre>
-<p>Allocate more memory to the iSEE application:</p>
-<pre class="r"><code>configureApp(appName = &quot;HT_KDR&quot;, appDir = &quot;shiny/sample&quot;, size = &quot;xlarge&quot;)</code></pre>
-</div>
+)</code></pre>
+<p>Plot matrix of AUC values for all regulons:</p>
+<pre class="r"><code>pheatmap(
+  mat = auc,
+  color = viridis(100),
+  cluster_cols = FALSE,
+  annotation_col = ann$annotation_col,
+  annotation_colors = ann$annotation_colors,
+  border_color = NA,
+  show_rownames = FALSE,
+  show_colnames = FALSE,
+)</code></pre>
+<p><img src="figure/scenic-analysis.Rmd/unnamed-chunk-12-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>Identify most variable regulons:</p>
+<pre class="r"><code>idx &lt;- order(rowVars(auc), decreasing = TRUE)[1:30]</code></pre>
+<p>Plot matrix of AUC values for outlier regulons:</p>
+<pre class="r"><code>pheatmap(
+  mat = auc[idx, ],
+  color = viridis(100),
+  cluster_cols = FALSE,
+  annotation_col = ann$annotation_col,
+  annotation_colors = ann$annotation_colors,
+  border_color = NA,
+  show_rownames = TRUE,
+  show_colnames = FALSE,
+)</code></pre>
+<p><img src="figure/scenic-analysis.Rmd/unnamed-chunk-14-1.png" width="100%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="summary" class="section level2">
 <h2>Summary</h2>
@@ -810,6 +712,83 @@ iSEE(sce, appTitle = &quot;HT_KDR&quot;, colormap = ecm)</code></pre>
 <h3>Session</h3>
 <p>Print session information:</p>
 <pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.0.2 (2020-06-22)
+Platform: x86_64-apple-darwin17.0 (64-bit)
+Running under: macOS Catalina 10.15.7
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRblas.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/4.0/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+
+attached base packages:
+[1] parallel  stats4    stats     graphics  grDevices datasets  utils    
+[8] methods   base     
+
+other attached packages:
+ [1] viridis_0.6.1               viridisLite_0.4.0          
+ [3] pheatmap_1.0.12             hues_0.2.0                 
+ [5] scuttle_1.0.4               SingleCellExperiment_1.12.0
+ [7] SummarizedExperiment_1.20.0 Biobase_2.50.0             
+ [9] GenomicRanges_1.42.0        GenomeInfoDb_1.26.7        
+[11] IRanges_2.24.1              S4Vectors_0.28.1           
+[13] BiocGenerics_0.36.1         MatrixGenerics_1.2.1       
+[15] matrixStats_0.59.0          workflowr_1.6.2            
+
+loaded via a namespace (and not attached):
+  [1] colorspace_2.0-1              ellipsis_0.3.2               
+  [3] rprojroot_2.0.2               bluster_1.0.0                
+  [5] XVector_0.30.0                BiocNeighbors_1.8.2          
+  [7] fs_1.5.0                      farver_2.1.0                 
+  [9] bit64_4.0.5                   AnnotationDbi_1.52.0         
+ [11] interactiveDisplayBase_1.28.0 fansi_0.5.0                  
+ [13] codetools_0.2-18              sparseMatrixStats_1.2.1      
+ [15] cachem_1.0.5                  knitr_1.33                   
+ [17] jsonlite_1.7.2                dbplyr_2.1.1                 
+ [19] shiny_1.6.0                   BiocManager_1.30.16          
+ [21] compiler_4.0.2                httr_1.4.2                   
+ [23] dqrng_0.3.0                   assertthat_0.2.1             
+ [25] Matrix_1.3-4                  fastmap_1.1.0                
+ [27] limma_3.46.0                  later_1.2.0                  
+ [29] BiocSingular_1.6.0            htmltools_0.5.1.1            
+ [31] tools_4.0.2                   rsvd_1.0.5                   
+ [33] igraph_1.2.6                  gtable_0.3.0                 
+ [35] glue_1.4.2                    GenomeInfoDbData_1.2.4       
+ [37] dplyr_1.0.7                   rappdirs_0.3.3               
+ [39] Rcpp_1.0.6                    MouseGastrulationData_1.4.0  
+ [41] jquerylib_0.1.4               vctrs_0.3.8                  
+ [43] ExperimentHub_1.16.1          DelayedMatrixStats_1.12.3    
+ [45] xfun_0.24                     stringr_1.4.0                
+ [47] beachmat_2.6.4                mime_0.10                    
+ [49] lifecycle_1.0.0               irlba_2.3.3                  
+ [51] renv_0.13.2                   statmod_1.4.36               
+ [53] AnnotationHub_2.22.1          edgeR_3.32.1                 
+ [55] zlibbioc_1.36.0               scales_1.1.1                 
+ [57] promises_1.2.0.1              RColorBrewer_1.1-2           
+ [59] yaml_2.2.1                    curl_4.3.1                   
+ [61] memoise_2.0.0                 gridExtra_2.3                
+ [63] ggplot2_3.3.5                 sass_0.4.0                   
+ [65] stringi_1.6.2                 RSQLite_2.2.7                
+ [67] highr_0.9                     BiocVersion_3.12.0           
+ [69] scran_1.18.7                  BiocParallel_1.24.1          
+ [71] rlang_0.4.11                  pkgconfig_2.0.3              
+ [73] bitops_1.0-7                  evaluate_0.14                
+ [75] lattice_0.20-44               purrr_0.3.4                  
+ [77] bit_4.0.4                     tidyselect_1.1.1             
+ [79] magrittr_2.0.1                R6_2.5.0                     
+ [81] generics_0.1.0                DelayedArray_0.16.3          
+ [83] DBI_1.1.1                     pillar_1.6.1                 
+ [85] whisker_0.4                   RCurl_1.98-1.3               
+ [87] tibble_3.1.2                  crayon_1.4.1                 
+ [89] utf8_1.2.1                    BiocFileCache_1.14.0         
+ [91] rmarkdown_2.9                 locfit_1.5-9.4               
+ [93] grid_4.0.2                    data.table_1.14.0            
+ [95] blob_1.2.1                    git2r_0.28.0                 
+ [97] digest_0.6.27                 xtable_1.8-4                 
+ [99] httpuv_1.6.1                  munsell_0.5.0                
+[101] bslib_0.2.5.1                </code></pre>
 </div>
 </div>
 
